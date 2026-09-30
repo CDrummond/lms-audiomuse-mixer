@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<extension>
+	<id>7b05c9ff-c71c-432f-a486-80414ea9d4ec</id>
+	<icon>plugins/AudioMuseMixer/html/images/audiomusemixer.png</icon>
+	<name>AUDIOMUSEMIXER</name>
+	<module>Plugins::AudioMuseMixer::Plugin</module>
+	<version>0.0.1</version>
+	<description>AUDIOMUSEMIXER_DESC</description>
+	<creator>Craig Drummond</creator>
+	<defaultState>
+		<mac>enabled</mac>
+		<win>enabled</win>
+		<other>enabled</other>
+	</defaultState>
+	<homepageURL>https://github.com/CDrummond/lms-audiomusemixer</homepageURL>
+	<type>2</type>
+	<targetApplication>
+		<id>Logitech Media Server</id>
+		<minVersion>9.2</minVersion>
+		<maxVersion>*</maxVersion>
+	</targetApplication>
+</extension>

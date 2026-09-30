@@ -1,0 +1,120 @@
+# String file for Bliss Mixer plugin
+
+AUDIOMUSEMIXER
+	EN	AudioMuse Mixer
+	DE	AudioMuse Mixer
+
+AUDIOMUSEMIXER_DESC
+	EN	AudioMuse Mixer for Don't Stop the Music
+	DE	AudioMuse Mixer für Don't Stop the Music
+
+AUDIOMUSEMIXER_FILTER_GENRES
+	EN	Restrict genres
+	DE	Stilrichtungen beschränken
+
+AUDIOMUSEMIXER_FILTER_GENRES_DESC
+	EN	Restrict mix to genres similar to that of the seed. Requires configuring genre groups (below). (Default: No)
+	DE	Mix auf Stilrichtungen beschränken, die dem Seed ähnlich sind. Benötigt konfigurierte Strilrichtungs-Gruppen (unten). (Default: Nein)
+
+AUDIOMUSEMIXER_FILTER_XMAS
+	EN	Exclude 'Christmas' genre
+	DE	Stilrichtung 'Christmas' ausschließen
+
+AUDIOMUSEMIXER_FILTER_XMAS_DESC
+	EN	Exclude tracks tagged with 'Christmas' genre, unless in December (Default: Yes)
+	DE	Tracks mit der Stilrichtung 'Christmas' ausschließen, sofern nicht Dezember ist (Default: Ja)
+
+AUDIOMUSEMIXER_MIN_DURATION
+	EN	Minimum duration
+	DE	Minimale Länge
+
+AUDIOMUSEMIXER_MIN_DURATION_DESC
+	EN	Restrict to songs with a duration (in seconds) longer than, or equal to, this. Set to 0 for no minimum.
+	DE	Auf Tracks beschränken, deren minimale Dauer (in Sekunden) länger oder gleich dem Wert ist. (Wert von 0: kein Minimum)
+
+AUDIOMUSEMIXER_MAX_DURATION
+	EN	Maximum duration
+	DE	Maximale Länge
+
+AUDIOMUSEMIXER_MAX_DURATION_DESC
+	EN	Restrict to songs with a duration (in seconds) less than, or equal to, this. Set to 0 for no maximum.
+	DE	Auf Tracks beschränken, deren maximale Dauer (in Sekunden) kürzer oder gleich dem Wert ist. (Wert von 0: kein Maximum)
+
+AUDIOMUSEMIXER_DSTM
+	EN	AudioMuse
+
+DEBUG_PLUGIN_AUDIOMUSEMIXER
+	EN	AudioMuse Mixer
+	DE	AudioMuse Mixer
+
+AUDIOMUSEMIXER_NO_REPEAT_ARTIST
+	EN	Don't repeat artist for x tracks
+	DE	Interpret die nächsten x Tracks nicht erneut auswählen
+
+AUDIOMUSEMIXER_NO_REPEAT_ARTIST_DESC
+	EN	Attempt to not use the same artist for the specified number of tracks. Artist may still repeat if there are too few candidate tracks.
+	DE	Für die angegebene Anzahl an Tracks wird der Interpret möglichst nicht erneut ausgewählt. Der Interpret wird erneut ausgewählt, wenn zu wenig Tracks als Kandidaten zur Auswahl stehen.
+
+AUDIOMUSEMIXER_NO_REPEAT_ALBUM
+	EN	Don't repeat album for x tracks
+	DE	Album für die nächsten x Tracks nicht erneut auswählen
+
+AUDIOMUSEMIXER_NO_REPEAT_ALBUM_DESC
+	EN	Attempt to not use the tracks from an album for the specified number of tracks. Tracks from same album may still repeat if there are too few candidate tracks, or the album is a 'Various Artists' album.
+	DE	Für die angegebene Anzahl an Tracks wird das Album möglichst nicht erneut ausgewählt. Der Interpret wird erneut ausgewählt, wenn zu wenig Tracks als Kandidaten zur Auswahl stehen oder das Album eines mit 'Diverse Interpreten' ist.
+
+AUDIOMUSEMIXER_NO_REPEAT_TRACK
+	EN	Don't repeat track for x tracks
+	DE	Track die nächsten x Tracks nicht erneut auswählen
+
+AUDIOMUSEMIXER_NO_REPEAT_TRACK_DESC
+	EN	Prevent a track from being repeated within the specified limit.
+	DE	Einen Track innerhalb der gegebenen Anzahl an Tracks nicht wiederholen.
+
+AUDIOMUSEMIXER_NUM_DSTM_TRACKS
+	EN	Number of mixer tracks
+	DE	Anzahl an Tracks im Mixer
+
+AUDIOMUSEMIXER_NUM_DSTM_TRACKS_DESC
+	EN	Number of tracks to add to the play queue when run as a mixer for "Don't Stop the Music"
+	DE	Anzahl an Tracks, die der Play Queue hinzugefügt werden, wenn als Mixer für "Dont' Stop the Music" ausgewählt
+
+AUDIOMUSEMIXER_GENRE_GROUPS
+	EN	Genre groups
+	DE	Stilrichtungs-Gruppen
+
+AUDIOMUSEMIXER_GENRE_GROUPS_DESC
+	EN	Define a list of genre groups. When filtering by genre only similar tracks within a track's genre group will be used. (If a track is not in a group, then only similar tracks that are also not in a group will be used.) Groups are configured as a semi-colon separated list of genre names (e.g. Pop; Dance) with each new group on a new line (empty lines are ignored). To enable filtering by specific genre then create a group with just that genre.
+	DE	Erstelle eine Liste aus Stilrichtungs-Gruppen. Beim Filtern nach Stilrichtungs-Gruppen werden nur Tracks, deren Stilrichtung in der Stilrichtungs-Gruppe enthalten sind, ausgewählt. (Wenn ein Track nicht in einer Gruppe ist, werden nur ähnliche Tracks ausgewählt, die ebenfalls nicht in der Gruppe sind.) Gruppen werden als Semikolon spearierte Liste aus Stilrichtungen erstellt (z.B. Pop; Dance), wobei jede Gruppe in einer neuen Zeile steht (leere Zeilen werden ignoriert). Mit Gruppen, die aus einer einzigen Stilrichtung bestehen, kann nach dieser Stilrichtung gefiltert werden.
+
+AUDIOMUSEMIXER_GENRE_NOTE
+	EN	Mixes are based upon the tonal attributes of tracks. However, you may also elect to restrict mixes to groups of related genres (e.g. 'Hard Rock' and 'Rock'). If you then enable filtering by genre, this will allow tracks with different genres but within the same group to be mixed.
+	DE	Mixe basieren auf tonalen Attributen eines Tracks. Dennoch können Mixe auf Gruppen bestimmter Stilrichtungen beschränkt werden (z.B. 'Hard Rock' und 'Rock'). Wenn der Filter nach Stilrichtung ausgewählt ist, werden Tracks der entsprechenden Stilrichtung in der Stilrichtungs-Gruppe für einen Mix ausgewählt.
+
+AUDIOMUSEMIXER_NUM_SEED_TRACKS
+	EN	Number of seed tracks
+	DE	Anzahl der Seed-Tracks
+
+AUDIOMUSEMIXER_NUM_SEED_TRACKS_DESC
+	EN	How many recent tracks to use as seeds for the adaptive weighting strategy. Fewer seeds give sharper, more focused weights. More seeds capture broader context but produce blurrier weights. Default: 3.
+	DE	Anzahl der kürzlich wiedergegebenen Tracks, die als Seeds für die adaptive Gewichtung verwendet werden. Weniger Seeds ergeben schärfere, stärker fokussierte Gewichtungen. Mehr Seeds erfassen einen breiteren Kontext, führen aber zu unschärferen Gewichtungen. Standard: 3.
+
+AUDIOMUSEMIXER_SEED_STRICT_ORDER
+	EN	Use most recent tracks as seeds
+	DE	Neueste Tracks als Seeds verwenden
+
+AUDIOMUSEMIXER_SEED_STRICT_ORDER_DESC
+	EN	When enabled, always use the last N tracks from the play queue as seeds, preserving their order. When disabled, seeds are randomly sampled from a larger pool of recent tracks.
+	DE	Wenn aktiviert, werden immer die letzten N Tracks aus der Wiedergabeliste als Seeds verwendet, wobei ihre Reihenfolge erhalten bleibt. Wenn deaktiviert, werden die Seeds zufällig aus einem größeren Pool kürzlich wiedergegebener Tracks ausgewählt.
+
+AUDIOMUSEMIXER_USE_TRACK_GENRE
+	EN	Use track genre
+
+AUDIOMUSEMIXER_USE_TRACK_GENRE_DESC
+	EN	If a track is not in a genre group then restrict candidate tracks to seed track's genre.
+
+AUDIOMUSEMIXER_MATCH_ALL_GENRES
+	EN	Match all genres
+
+AUDIOMUSEMIXER_MATCH_ALL_GENRES_DESC
+	EN	When checking if a track is in a genre group check all of the track's genres are in the group (if this option is enabled), otherwise check that any of the track's genres are in a group. e.g. if you have a group "Metal;Rock;Vocal" then if this option is set then a track with "Hard Rock;Vocal" would not match. If this option is not set then it would.

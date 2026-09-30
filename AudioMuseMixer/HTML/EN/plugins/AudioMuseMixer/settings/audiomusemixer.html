@@ -1,0 +1,61 @@
+[% PROCESS settings/header.html %]
+[% WRAPPER settingSection %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_NO_REPEAT_ARTIST" desc="AUDIOMUSEMIXER_NO_REPEAT_ARTIST_DESC" %]
+        <input type="number" min="0" max="200" class="stdedit" name="pref_no_repeat_artist" id="no_repeat_artist" value="[% prefs.no_repeat_artist %]" size="5">
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_NO_REPEAT_ALBUM" desc="AUDIOMUSEMIXER_NO_REPEAT_ALBUM_DESC" %]
+        <input type="number" min="0" max="200" class="stdedit" name="pref_no_repeat_album" id="no_repeat_album" value="[% prefs.no_repeat_album %]" size="5">
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_NO_REPEAT_TRACK" desc="AUDIOMUSEMIXER_NO_REPEAT_TRACK_DESC" %]
+        <input type="number" min="0" max="200" class="stdedit" name="pref_no_repeat_track" id="no_repeat_track" value="[% prefs.no_repeat_track %]" size="5">
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_MIN_DURATION" desc="AUDIOMUSEMIXER_MIN_DURATION_DESC" %]
+        <input type="number" min="0" max="3600" class="stdedit" name="pref_min_duration" id="min_duration" value="[% prefs.min_duration %]" size="5">
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_MAX_DURATION" desc="AUDIOMUSEMIXER_MAX_DURATION_DESC" %]
+        <input type="number" min="0" max="3600" class="stdedit" name="pref_max_duration" id="max_duration" value="[% prefs.max_duration %]" size="5">
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_NUM_DSTM_TRACKS" desc="AUDIOMUSEMIXER_NUM_DSTM_TRACKS_DESC" %]
+        <input type="number" min="2" max="20" class="stdedit" name="pref_dstm_tracks" id="dstm_tracks" value="[% prefs.dstm_tracks %]" size="5">
+    [% END %]
+
+        [% WRAPPER settingGroup title="AUDIOMUSEMIXER_NUM_SEED_TRACKS" desc="AUDIOMUSEMIXER_NUM_SEED_TRACKS_DESC" %]
+        <input type="number" min="2" max="25" class="stdedit" name="pref_num_seed_tracks" id="num_seed_tracks" value="[% prefs.num_seed_tracks %]" size="5">
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_SEED_STRICT_ORDER" desc="AUDIOMUSEMIXER_SEED_STRICT_ORDER_DESC" %]
+        <input type="checkbox" name="pref_seed_strict_order" id="seed_strict_order" [% IF prefs.seed_strict_order %] checked [% END %] value="1"/>
+    [% END %]
+
+    <br/><hr style="opacity:0.4" class="sub-sep"/><br/>
+    <b style="font-size:120%">[% "GENRES" | string %]</b><br/><br/>
+    <div style="opacity:0.6">[% "AUDIOMUSEMIXER_GENRE_NOTE" | string %]</div><br/>
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_FILTER_GENRES" desc="AUDIOMUSEMIXER_FILTER_GENRES_DESC" %]
+        <input type="checkbox" name="pref_filter_genres" id="filter_genres" [% IF prefs.filter_genres %] checked [% END %] value="1"/>
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_FILTER_XMAS" desc="AUDIOMUSEMIXER_FILTER_XMAS_DESC" %]
+        <input type="checkbox" name="pref_filter_xmas" id="filter_xmas" [% IF prefs.filter_xmas %] checked [% END %] value="1"/>
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_GENRE_GROUPS" desc="AUDIOMUSEMIXER_GENRE_GROUPS_DESC" %]
+        <textarea class="stdedit" name="pref_genre_groups" id="genre_groups" cols="80" rows="5">[% prefs.genre_groups %]</textarea>
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_MATCH_ALL_GENRES" desc="AUDIOMUSEMIXER_MATCH_ALL_GENRES_DESC" %]
+        <input type="checkbox" name="pref_match_all_genres" id="match_all_genres" [% IF prefs.match_all_genres %] checked [% END %] value="1"/>
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_USE_TRACK_GENRE" desc="AUDIOMUSEMIXER_USE_TRACK_GENRE_DESC" %]
+        <input type="checkbox" name="pref_use_track_genre" id="use_track_genre" [% IF prefs.use_track_genre %] checked [% END %] value="1"/>
+    [% END %]
+
+[% END %]
+[% PROCESS settings/footer.html %]
