@@ -45,6 +45,27 @@ sub _base {
     return $u;
 }
 
+# AudioMuse-AI multi-server (v3.0.1+): this Lyrion server's display name
+# in AudioMuse. Blank = AudioMuse's default server.
+sub _server {
+    return _trim($prefs->get('server_name') // '');
+}
+
+# Full URL for $path, with `server` appended when a server name is set.
+# Query string for POSTs too: AudioMuse reads `server` from the JSON body
+# or the query string. Server-scoped endpoints then resolve seeds and
+# return item_ids in that server's ID space; the others ignore it.
+# Doubles as the GET cache key, so cached responses are per-server.
+sub _url {
+    my $path = shift;
+    my $url  = _base() . $path;
+    my $srv  = _server();
+    if (length($srv)) {
+        return $url . ($path =~ /\?/ ? '&' : '?') . 'server=' . uri_escape_utf8($srv);
+    }
+    return $url;
+}
+
 sub _headers {
     my $token = _trim($prefs->get('token') // '');
     # Reject anything with embedded CR/LF: it would smuggle headers.
@@ -73,7 +94,7 @@ sub _decode {
 
 sub _get {
     my ($path, $cb_ok, $cb_err, $timeout, $cache_for) = @_;
-    my $url = _base() . $path;
+    my $url = _url($path);
     $timeout ||= TIMEOUT_QUERY;
 
     if ($cache_for) {
@@ -111,7 +132,7 @@ sub _get {
 
 sub _post {
     my ($path, $payload, $cb_ok, $cb_err, $timeout) = @_;
-    my $url = _base() . $path;
+    my $url = _url($path);
     $timeout ||= TIMEOUT_QUERY;
     $log->debug("POST $url (timeout ${timeout}s)");
 

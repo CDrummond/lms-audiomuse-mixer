@@ -1,5 +1,25 @@
 [% PROCESS settings/header.html %]
 [% WRAPPER settingSection %]
+    <b style="font-size:120%">[% "AUDIOMUSEMIXER_SERVER_SETTINGS" | string %]</b><br/><br/>
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_URL" desc="AUDIOMUSEMIXER_URL_DESC" %]
+        <input type="text" name="pref_url" value="[% prefs.url %]">
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_SERVER_NAME" desc="AUDIOMUSEMIXER_SERVER_NAME_DESC" %]
+        <input type="text" name="pref_server_name" value="[% prefs.server_name %]">
+    [% END %]
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_TOKEN" desc="AUDIOMUSEMIXER_TOKEN_DESC" %]
+        <input type="text" name="pref_token" value="[% prefs.token %]">
+    [% END %]
+
+    <br/><hr style="opacity:0.4" class="sub-sep"/><br/>
+    <b style="font-size:120%">[% "AUDIOMUSEMIXER_MIX_SETTINGS" | string %]</b><br/><br/>
+
+    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_FILTER_GENRES" desc="AUDIOMUSEMIXER_FILTER_GENRES_DESC" %]
+        <input type="checkbox" name="pref_filter_genres" id="filter_genres" [% IF prefs.filter_genres %] checked [% END %] value="1"/>
+    [% END %]
 
     [% WRAPPER settingGroup title="AUDIOMUSEMIXER_NO_REPEAT_ARTIST" desc="AUDIOMUSEMIXER_NO_REPEAT_ARTIST_DESC" %]
         <input type="number" min="0" max="200" class="stdedit" name="pref_no_repeat_artist" id="no_repeat_artist" value="[% prefs.no_repeat_artist %]" size="5">
@@ -26,7 +46,7 @@
     [% END %]
 
         [% WRAPPER settingGroup title="AUDIOMUSEMIXER_NUM_SEED_TRACKS" desc="AUDIOMUSEMIXER_NUM_SEED_TRACKS_DESC" %]
-        <input type="number" min="2" max="25" class="stdedit" name="pref_num_seed_tracks" id="num_seed_tracks" value="[% prefs.num_seed_tracks %]" size="5">
+        <input type="number" min="1" max="25" class="stdedit" name="pref_num_seed_tracks" id="num_seed_tracks" value="[% prefs.num_seed_tracks %]" size="5">
     [% END %]
 
     [% WRAPPER settingGroup title="AUDIOMUSEMIXER_SEED_STRICT_ORDER" desc="AUDIOMUSEMIXER_SEED_STRICT_ORDER_DESC" %]

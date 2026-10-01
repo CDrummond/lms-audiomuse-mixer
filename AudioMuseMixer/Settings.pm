@@ -33,25 +33,42 @@ sub page {
 }
 
 sub prefs {
-    return ($prefs, 'url', 'auth_key', 'timeout', 'filter_genres', 'filter_xmas', 'min_duration', 'max_duration', 'no_repeat_artist',
+    return ($prefs, 'url', 'token', 'server_name', 'filter_genres', 'filter_xmas', 'min_duration', 'max_duration', 'no_repeat_artist',
                     'no_repeat_album', 'no_repeat_track', 'dstm_tracks', 'genre_groups', 'use_track_genre', 'num_seed_tracks',
                     'seed_strict_order', 'match_all_genres');
 }
 
 sub handler {
-    my ($class, $client, $paramRef) = @_;
+    my ($class, $client, $params) = @_;
+    if (defined $params->{pref_url}) {
+        $params->{pref_url} = _normalizeUrl($params->{pref_url});
+    }
+    if (defined $params->{pref_token}) {
+        my $t = _trim($params->{pref_token});
+        $t = '' if $t =~ /[\r\n]/;
+        $params->{pref_token} = $t;
+    }
+    if (defined $params->{pref_server_name}) {
+        $params->{pref_server_name} = _trim($params->{pref_server_name});
+    }
     for my $setting (
-        ['pref_lastfm_weighting_weight', 0, 100],
-        ['pref_playcount_influence', -100, 100],
+        ['pref_min_duration', 0, 3600],
+        ['pref_max_duration', 0, 3600],
+        ['pref_no_repeat_artist', 0, 200],
+        ['pref_no_repeat_album', 0, 200],
+        ['pref_no_repeat_track', 0, 200],
+        ['pref_dstm_tracks', 2, 20],
+        ['pref_num_seed_tracks', 1, 25]
     ) {
         my ($name, $minimum, $maximum) = @$setting;
-        next unless defined $paramRef->{$name};
-        my $value = int($paramRef->{$name});
+        next unless defined $params->{$name};
+        my $value = int($params->{$name});
         $value = $minimum if $value < $minimum;
         $value = $maximum if $value > $maximum;
-        $paramRef->{$name} = $value;
+        $params->{$name} = $value;
     }
-    return $class->SUPER::handler($client, $paramRef);
+
+    return $class->SUPER::handler($client, $params);
 }
 
 1;

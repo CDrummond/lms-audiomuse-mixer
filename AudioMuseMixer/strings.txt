@@ -1,4 +1,4 @@
-# String file for Bliss Mixer plugin
+# String file for AudioMuse Mixer plugin
 
 AUDIOMUSEMIXER
 	EN	AudioMuse Mixer
@@ -7,6 +7,30 @@ AUDIOMUSEMIXER
 AUDIOMUSEMIXER_DESC
 	EN	AudioMuse Mixer for Don't Stop the Music
 	DE	AudioMuse Mixer für Don't Stop the Music
+
+AUDIOMUSEMIXER_SERVER_SETTINGS
+	EN	Server connection settings
+
+AUDIOMUSEMIXER_MIX_SETTINGS
+	EN	Mix settings
+
+AUDIOMUSEMIXER_URL
+	EN	Server URL
+
+AUDIOMUSEMIXER_URL_DESC
+	EN	URL or AudioMuse-AI server (e.g. http://localhost:8000)
+
+AUDIOMUSEMIXER_SERVER_NAME
+	EN	Music server name
+
+AUDIOMUSEMIXER_SERVER_NAME_DESC
+	EN	Name of this server in AudioMuse-AI's multi-server setup (e.g. Lyrion). This can be left blank if AudioMuse-AI is only connected to this music server.
+
+AUDIOMUSEMIXER_TOKEN
+	EN	API token
+
+AUDIOMUSEMIXER_TOKEN_DESC
+	EN	Bearer token for AudioMuse-AI. This is generated in the AudioMuse web UI under Administration. Leave blank if authentication is not enabled on the AudioMuse-AI server.
 
 AUDIOMUSEMIXER_FILTER_GENRES
 	EN	Restrict genres
