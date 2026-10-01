@@ -461,6 +461,11 @@ sub _generateMix {
         }
     }
 
+    my $reqCount = $count * 10;
+    if ($reqCount<40) {
+        $reqCount = 40;
+    }
+
     #
     # TODO: API choice: similar, hyperbolic, semgrove, alchemy
     #
@@ -471,14 +476,14 @@ sub _generateMix {
         }
         main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI alchemy API");
         Plugins::AudioMuseMixer::API::alchemy(
-            \@useIds, [], $count * 10,
+            \@useIds, [], $reqCount,
             sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
             sub { $cb->([]); }
         );
     } else {
         main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI similar_tracks API");
         Plugins::AudioMuseMixer::API::similar_tracks(
-            @$seedTracks[0]->id, $count * 10,
+            @$seedTracks[0]->id, $reqCount,
             sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
             sub { $cb->([]); }
         );
