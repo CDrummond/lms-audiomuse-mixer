@@ -467,9 +467,6 @@ sub _generateMix {
         $reqCount = 40;
     }
 
-    #
-    # TODO: API choice: similar, hyperbolic, semgrove, alchemy
-    #
     if (scalar(@$seedTracks)>1) {
         my @useIds = ();
         foreach my $track (@$seedTracks) {
@@ -488,15 +485,53 @@ sub _generateMix {
             main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI sem_grove API");
             Plugins::AudioMuseMixer::API::sem_grove(
                 @$seedTracks[0]->id, $reqCount,
-                sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
-                sub { $cb->([]); }
+                sub { _processResponse(shift, sub {
+                    my $tracks = shift;
+                    if (scalar(@$tracks)>1) {
+                        $cb->($tracks);
+                    } else {
+                        main::DEBUGLOG && $log->debug("sem_grove returned no tracks, fallback to similar_tracks API");
+                        Plugins::AudioMuseMixer::API::similar_tracks(
+                            @$seedTracks[0]->id, $reqCount,
+                            sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                            sub { $cb->([]); }
+                        );
+                    }
+                },$seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                sub {
+                    main::DEBUGLOG && $log->debug("sem_grove failed, fallback to similar_tracks API");
+                    Plugins::AudioMuseMixer::API::similar_tracks(
+                        @$seedTracks[0]->id, $reqCount,
+                        sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                        sub { $cb->([]); }
+                    );
+                }
             );
         } elsif (2==$api) {
             main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI similar_hyperbolic_tracks API");
             Plugins::AudioMuseMixer::API::similar_hyperbolic_tracks(
                 @$seedTracks[0]->id, $reqCount,
-                sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
-                sub { $cb->([]); }
+                sub { _processResponse(shift, sub {
+                    my $tracks = shift;
+                    if (scalar(@$tracks)>1) {
+                        $cb->($tracks);
+                    } else {
+                        main::DEBUGLOG && $log->debug("similar_hyperbolic_tracks returned no tracks, fallback to similar_tracks API");
+                        Plugins::AudioMuseMixer::API::similar_tracks(
+                            @$seedTracks[0]->id, $reqCount,
+                            sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                            sub { $cb->([]); }
+                        );
+                    }
+                }, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                sub {
+                    main::DEBUGLOG && $log->debug("similar_hyperbolic_tracks failed, fallback to similar_tracks API");
+                    Plugins::AudioMuseMixer::API::similar_tracks(
+                        @$seedTracks[0]->id, $reqCount,
+                        sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                        sub { $cb->([]); }
+                    );
+                }
             );
         } else {
             main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI similar_tracks API");
