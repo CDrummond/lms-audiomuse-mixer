@@ -33,7 +33,7 @@ sub page {
 }
 
 sub prefs {
-    return ($prefs, 'url', 'token', 'server_name', 'filter_genres', 'filter_xmas', 'min_duration', 'max_duration', 'no_repeat_artist',
+    return ($prefs, 'url', 'token', 'server_name', 'api', 'filter_genres', 'filter_xmas', 'min_duration', 'max_duration', 'no_repeat_artist',
                     'no_repeat_album', 'no_repeat_track', 'dstm_tracks', 'genre_groups', 'use_track_genre', 'num_seed_tracks',
                     'seed_strict_order', 'match_all_genres');
 }
@@ -58,7 +58,8 @@ sub handler {
         ['pref_no_repeat_album', 0, 200],
         ['pref_no_repeat_track', 0, 200],
         ['pref_dstm_tracks', 2, 20],
-        ['pref_num_seed_tracks', 1, 25]
+        ['pref_num_seed_tracks', 1, 25],
+        ['pref_api', 0, 2]
     ) {
         my ($name, $minimum, $maximum) = @$setting;
         next unless defined $params->{$name};

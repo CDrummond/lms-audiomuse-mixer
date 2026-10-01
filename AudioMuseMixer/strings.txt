@@ -142,3 +142,21 @@ AUDIOMUSEMIXER_MATCH_ALL_GENRES
 
 AUDIOMUSEMIXER_MATCH_ALL_GENRES_DESC
 	EN	When checking if a track is in a genre group check all of the track's genres are in the group (if this option is enabled), otherwise check that any of the track's genres are in a group. e.g. if you have a group "Metal;Rock;Vocal" then if this option is set then a track with "Hard Rock;Vocal" would not match. If this option is not set then it would.
+
+AUDIOMUSEMIXER_API_HEADER
+	EN	Single Track Similarity API
+
+AUDIOMUSEMIXER_API_NOTE
+	EN	Select which AudioMuse-AI API to choose when selecting similar tracks if there is only one seed track.<br/><br/><ul><li><b>Similar tracks</b> Uses acoustic properites only.</li><li><b>SemGrove</b> Use a combination of lyrics and acoustic properties.</li><li><b>Hyperbolic</b> Ranks tracks by Poincare distance, using the hyperbolic projection built in AudioMuse AI.</li>
+
+AUDIOMUSEMIXER_API
+	EN	API
+
+AUDIOMUSEMIXER_API_SIMILAR_TRACKS
+	EN	Similar tracks
+
+AUDIOMUSEMIXER_API_SEMGROVE
+	EN	SemGrove
+
+AUDIOMUSEMIXER_API_HYPERBOLIC
+	EN	Hyperbolic projection

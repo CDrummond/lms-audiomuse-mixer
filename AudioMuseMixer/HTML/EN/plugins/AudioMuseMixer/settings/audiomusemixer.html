@@ -54,6 +54,23 @@
     [% END %]
 
     <br/><hr style="opacity:0.4" class="sub-sep"/><br/>
+    <b style="font-size:120%">[% "AUDIOMUSEMIXER_API_HEADER" | string %]</b><br/><br/>
+    <div style="opacity:0.6">[% "AUDIOMUSEMIXER_API_NOTE" | string %]</div><br/>
+
+    [% WRAPPER setting title="AUDIOMUSEMIXER_API" %]
+    <select class="stdedit" name="pref_api" id="api">
+        [% FOREACH option = {
+            'AUDIOMUSEMIXER_API_SIMILAR_TRACKS' => 0,
+            'AUDIOMUSEMIXER_API_SEMGROVE' => 1,
+            'AUDIOMUSEMIXER_API_HYPERBOLIC' => 2
+        } %]
+        <option [% IF prefs.api == option.value %]selected [% END %]value="[% option.value %]">[% option.key | string %]</option>
+        [%- END -%]
+    </select>
+    [% END %]
+
+
+    <br/><hr style="opacity:0.4" class="sub-sep"/><br/>
     <b style="font-size:120%">[% "GENRES" | string %]</b><br/><br/>
     <div style="opacity:0.6">[% "AUDIOMUSEMIXER_GENRE_NOTE" | string %]</div><br/>
 

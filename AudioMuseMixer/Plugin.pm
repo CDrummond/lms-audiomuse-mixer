@@ -65,6 +65,7 @@ sub initPlugin {
         url              => 'http://localhost:8000',
         token            => undef,
         server_name      => '',
+        api              => 0,
         min_duration     => 90,
         max_duration     => 0,
         no_repeat_artist => 15,
@@ -481,12 +482,30 @@ sub _generateMix {
             sub { $cb->([]); }
         );
     } else {
-        main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI similar_tracks API");
-        Plugins::AudioMuseMixer::API::similar_tracks(
-            @$seedTracks[0]->id, $reqCount,
-            sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
-            sub { $cb->([]); }
-        );
+        my $api => int($prefs->get('api') || 0);
+
+        if (1==$api) {
+            main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI sem_grove API");
+            Plugins::AudioMuseMixer::API::sem_grove(
+                @$seedTracks[0]->id, $reqCount,
+                sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                sub { $cb->([]); }
+            );
+        } elsif (2==$api) {
+            main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI similar_hyperbolic_tracks API");
+            Plugins::AudioMuseMixer::API::similar_hyperbolic_tracks(
+                @$seedTracks[0]->id, $reqCount,
+                sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                sub { $cb->([]); }
+            );
+        } else {
+            main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI similar_tracks API");
+            Plugins::AudioMuseMixer::API::similar_tracks(
+                @$seedTracks[0]->id, $reqCount,
+                sub { _processResponse(shift, $cb, $seedTracks, $count, $filterXmas, $month, $minDuration, $maxDuration, $noRepeatArtist, $noRepeatAlbum, $matchAllGenres, $isDstm, $prevTracks) },
+                sub { $cb->([]); }
+            );
+        }
     }
 }
 
