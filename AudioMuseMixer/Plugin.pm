@@ -50,6 +50,12 @@ my $genreGroups = [];
 my $genreGroupsTs = 0;
 my $useTrackGenreTs = 0;
 
+my %excludeArtists = ();
+my $excludeArtistsTs = 0;
+
+my %excludeAlbums = ();
+my $excludeAlbumsTs = 0;
+
 sub shutdownPlugin {
     $initialized = 0;
 }
@@ -75,7 +81,9 @@ sub initPlugin {
         dstm_tracks      => DEF_NUM_DSTM_RESP_TRACKS,
         num_seed_tracks  => DEF_NUM_SEED_TRACKS,
         seed_strict_order => 0,
-        match_all_genres => 0
+        match_all_genres => 0,
+        exclude_artists  => '',
+        exclude_albums   => ''
     });
 
     if ( main::WEBUI ) {
@@ -98,7 +106,9 @@ sub initPlugin {
     }
 
     $initialized = 1;
-    _genreGroups();
+    _initGenreGroups();
+    _initExcludeArtists();
+    _initExcludeAlbums();
     return $initialized;
 }
 
@@ -568,8 +578,10 @@ sub _processResponse {
     my %artists = ();
     my %albums = ();
 
-    # Read genre groups - may have changed
-    _genreGroups();
+    # Init genre groups and exclusions - may have changed
+    _initGenreGroups();
+    _initExcludeArtists();
+    _initExcludeAlbums();
 
     my $filterGenreGroups = scalar($genreGroups)>0;
     # Genres (from grouping) of seed tracks
@@ -632,6 +644,8 @@ sub _processResponse {
     if ($tracks && scalar(@$tracks)>$count) {
         my @excludedDueToArtist = ();
         my @excludedDueToAlbum = ();
+        my @filteredOutDueToArtist = ();
+        my @filteredOutDueToAlbum = ();
 
         foreach my $track (@$tracks) {
             if (($minDuration>0 && $track->secs<$minDuration) || ($maxDuration>0 && $track->secs>$minDuration)) {
@@ -657,6 +671,18 @@ sub _processResponse {
             my $artist = $track->artistid;
             my $album = $track->albumid;
 
+            if (exists($excludeArtists{$artist})) {
+                main::DEBUGLOG && $log->debug("EXCLUDE (artist): " . $track->url);
+                push @excludedDueToArtist, $track;
+                next;
+            }
+
+            if (exists($excludeAlbums{$album})) {
+                main::DEBUGLOG && $log->debug("EXCLUDE (album): " . $track->url);
+                push @excludedDueToAlbum, $track;
+                next;
+            }
+
             if (exists($titles{$title})) {
                 main::DEBUGLOG && $log->debug("FILTER (title): " . $track->url);
                 next;
@@ -669,15 +695,15 @@ sub _processResponse {
                 next;
             }
 
-            if ($noRepeatArtist>0&& exists($artists{$artist}) && $pos-$artists{$artist}<=$noRepeatArtist) {
+            if ($noRepeatArtist>0 && exists($artists{$artist}) && $pos-$artists{$artist}<=$noRepeatArtist) {
                 main::DEBUGLOG && $log->debug("FILTER (artist): " . $track->url);
-                push @excludedDueToArtist, $track;
+                push @filteredOutDueToArtist, $track;
                 next;
             }
 
             if ($noRepeatAlbum>0 && $artist!=Slim::Schema->variousArtistsObject->id && exists($albums{$album}) && $pos-$albums{$album}<=$noRepeatAlbum) {
                 main::DEBUGLOG && $log->debug("FILTER (album): " . $track->url);
-                push @excludedDueToAlbum, $track;
+                push @filteredOutDueToAlbum, $track;
                 next;
             }
 
@@ -693,19 +719,26 @@ sub _processResponse {
         my $total = scalar(@usable);
         if ($total<=$count) {
             if ($total<$count) {
-                foreach my $track (@excludedDueToArtist) {
+                foreach my $track (@filteredOutDueToArtist) {
                     push @usable, $track->url;
                     if (scalar(@usable)>=$count) {
                         last;
                     }
                 }
                 if (scalar(@usable)<$count) {
-                    foreach my $track (@excludedDueToAlbum) {
+                    foreach my $track (@filteredOutDueToAlbum) {
                         push @usable, $track->url;
                         if (scalar(@usable)>=$count) {
                             last;
                         }
                     }
+                }
+            }
+            if ($total<1) {
+                if (scalar(@excludedDueToAlbum)>0) {
+                    push @usable, $excludedDueToAlbum[0]->url;
+                } elsif (scalar(@excludedDueToArtist)>0) {
+                    push @usable, $excludedDueToArtist[0]->url;
                 }
             }
         }
@@ -765,7 +798,7 @@ sub _getPreviousTracks {
     return $tracks;
 }
 
-sub _genreGroups {
+sub _initGenreGroups {
     # Check to see if config has changed, saves having to read and process each time
     my $ggTs = $prefs->get('_ts_genre_groups');
     my $utgTs = $prefs->get('_ts_use_track_genre');
@@ -818,12 +851,87 @@ sub _genreGroups {
     main::DEBUGLOG && $log->debug("GENRE GROUPS: " . Data::Dump::dump($genreGroups));
 }
 
+sub _initExcludeAlbums {
+    # Check to see if config has changed, saves having to read and process each time
+    my $ts = $prefs->get('_ts_exclude_artists');
+    if ($ts==$excludeArtistsTs ) {
+        return;
+    }
+    $excludeArtistsTs = $ts;
+    my $exPref = $prefs->get('exclude_artists');
+    my @ids = ();
+    if ($exPref) {
+        my @lines = split(/\n/, $exPref);
+        if (scalar(@lines)>0) {
+            my $dbh = Slim::Schema->dbh;
+            my $sql = $dbh->prepare_cached( qq{SELECT id FROM contributors WHERE name = ?} );
+            foreach my $line (@lines) {
+                $line=~ s/^\s+//;
+                $line=~ s/\s+$//;
+                if (length $line > 0) {
+                    $sql->execute($line);
+                    if ( my $result = $sql->fetchall_arrayref({}) ) {
+                        foreach my $res (@$result) {
+                            push @ids, $res->{'id'}
+                        }
+                    }
+                }
+            }
+        }
+    }
+    %excludeArtists = map { $_ => 1 } @ids;
+}
+
+sub _initExcludeAlbums {
+    # Check to see if config has changed, saves having to read and process each time
+    my $ts = $prefs->get('_ts_exclude_albums');
+    if ($ts==$excludeAlbumsTs ) {
+        return;
+    }
+    $excludeAlbumsTs = $ts;
+    my $exPref = $prefs->get('exclude_albums');
+    my @ids = ();
+    if ($exPref) {
+        my @lines = split(/\n/, $exPref);
+        if (scalar(@lines)>0) {
+            my $dbh = Slim::Schema->dbh;
+            my $artistSql = $dbh->prepare_cached( qq{SELECT id FROM albums WHERE contributor = ? AND name = ?} );
+            my $albumSql = $dbh->prepare_cached( qq{SELECT id FROM albums WHERE name = ?} );
+            foreach my $line (@lines) {
+                $line=~ s/^\s+//;
+                $line=~ s/\s+$//;
+                if (length $line > 0) {
+                    my @parts = split(/\/\//, $line);
+                    if (2==scalar(@parts)) {
+                        $artistSql->execute($parts[0], $parts[1]);
+                        if ( my $result = $artistSql->fetchall_arrayref({}) ) {
+                            foreach my $res (@$result) {
+                                push @ids, $res->{'id'}
+                            }
+                        }
+                    } else {
+                        $albumSql->execute($line);
+                        if ( my $result = $albumSql->fetchall_arrayref({}) ) {
+                            foreach my $res (@$result) {
+                                push @ids, $res->{'id'}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    %excludeAlbums = map { $_ => 1 } @ids;
+}
+
 sub _notifyFromScanner {
     my $request = shift;              
     my $msg = $request->getParam('_msg');
     if ( $msg eq 'exit' ) {
         # Scan may change genre IDs, so need to invalidate genre groups
         $genreGroupsTs = 0;
+        $excludeArtistsTs = 0;
+        $excludeAlbumsTs = 0;
     }
     $request->setStatusDone();
 }

@@ -160,3 +160,15 @@ AUDIOMUSEMIXER_API_SEMGROVE
 
 AUDIOMUSEMIXER_API_HYPERBOLIC
 	EN	Hyperbolic projection
+
+AUDIOMUSEMIXER_EXCLUSIONS
+	EN	Exclusions
+
+AUDIOMUSEMIXER_EXCLUSIONS_NOTE
+	EN	AudioMuse-AI usually analyses your complete library. However, you may have tracks that you would not like to have automatically added to mixes. This section allows you to set items to be excluded from these mixes.
+
+AUDIOMUSEMIXER_EXCLUDE_ARTISTS_DESC
+	EN	Each artist should be on a separate line.
+
+AUDIOMUSEMIXER_EXCLUDE_ALBUMS_DESC
+	EN	Each entry should be of the format "Artist//Album", and each should be on a separate line. If "//" is not found then only the album name is searched for.

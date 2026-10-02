@@ -35,7 +35,7 @@ sub page {
 sub prefs {
     return ($prefs, 'url', 'token', 'server_name', 'api', 'filter_genres', 'filter_xmas', 'min_duration', 'max_duration', 'no_repeat_artist',
                     'no_repeat_album', 'no_repeat_track', 'dstm_tracks', 'genre_groups', 'use_track_genre', 'num_seed_tracks',
-                    'seed_strict_order', 'match_all_genres');
+                    'seed_strict_order', 'match_all_genres', 'exclude_artists', 'exclude_albums');
 }
 
 sub handler {
