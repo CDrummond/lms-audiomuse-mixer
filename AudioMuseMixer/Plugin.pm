@@ -32,6 +32,7 @@ use constant API_SIMILAR_TRACKS          => 0;
 use constant API_SEM_GROVE               => 1;
 use constant API_HYPERBOLIC              => 2;
 use constant NUM_CLI_MIX_SEED_TRACKS     => 10;
+use constant MIN_CLI_MIX_SEED_TRACKS     => 7;
 use constant NUM_CLI_MIX_RESP_TRACKS_FEW => 20; # Number of tracks in a mix if few seeds
 use constant NUM_CLI_MIX_RESP_TRACKS     => 50; # Number of tracks in a mix
 
@@ -302,6 +303,10 @@ sub _cliMix {
         my $col = 'track';
         my $param;
         my $dbh = Slim::Schema->dbh;
+        my $minDuration = int($prefs->get('min_duration') || DEF_MIN_DURATION);
+        my $maxDuration = int($prefs->get('max_duration') || DEF_MAX_DURATION);
+        my $durationFilteredTracks = [];
+
         if ($request->getParam('artist_id')) {
             $sql = $dbh->prepare_cached( qq{SELECT track FROM contributor_track WHERE contributor = ?} );
             $param = $request->getParam('artist_id');
@@ -320,19 +325,34 @@ sub _cliMix {
         $sql->execute($param);
         if ( my $result = $sql->fetchall_arrayref({}) ) {
             foreach my $res (@$result) {
-                my ($trackObj) = Slim::Schema->find('Track', $res->{$col});
-                if ($trackObj) {
-                    push @seedsToUse, $trackObj;
+                my ($track) = Slim::Schema->find('Track', $res->{$col});
+                if ($track) {
+                    if (($minDuration>0 && $track->secs<$minDuration) || ($maxDuration>0 && $track->secs>$maxDuration)) {
+                        push @$durationFilteredTracks, $track;
+                    } ele {
+                        push @seedsToUse, $track;
+                    }
                 }
             }
         }
+
+        # Too few tracks? Add some that were filtered due to duration
+        if (scalar @seedsToUse < MIN_CLI_MIX_SEED_TRACKS && scalar @$durationFilteredTracks) {
+            foreach my $track (@$durationFilteredTracks) {
+                push @seedsToUse, $track;
+                if (scalar @seedsToUse >= MIN_CLI_MIX_SEED_TRACKS) {
+                    last;
+                }
+            }
+        }
+
         if (scalar @seedsToUse > NUM_CLI_MIX_SEED_TRACKS) {
             Slim::Player::Playlist::fischer_yates_shuffle(\@seedsToUse);
             @seedsToUse = splice(@seedsToUse, 0, NUM_CLI_MIX_SEED_TRACKS);
         }
 
-        foreach my $trackObj (@seedsToUse) {
-            main::DEBUGLOG && $log->debug("AudioMuseMix Track Seed " . $trackObj->path);
+        foreach my $track (@seedsToUse) {
+            main::DEBUGLOG && $log->debug("AudioMuseMix Track Seed " . $track->path);
         }
     }
 
