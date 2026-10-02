@@ -28,12 +28,23 @@ use Plugins::AudioMuseMixer::API;
 use Plugins::AudioMuseMixer::Settings;
 use Plugins::AudioMuseMixer::ProtocolHandler;
 
-use constant DEF_NUM_DSTM_RESP_TRACKS    => 5;
-use constant DEF_NUM_SEED_TRACKS         => 3;
-use constant DEF_MAX_PREVIOUS_TRACKS     => 100;
+use constant API_SIMILAR_TRACKS          => 0;
+use constant API_SEM_GROVE               => 1;
+use constant API_HYPERBOLIC              => 2;
 use constant NUM_CLI_MIX_SEED_TRACKS     => 10;
 use constant NUM_CLI_MIX_RESP_TRACKS_FEW => 20; # Number of tracks in a mix if few seeds
 use constant NUM_CLI_MIX_RESP_TRACKS     => 50; # Number of tracks in a mix
+
+# Defaults
+use constant DEF_NO_REPEAT_ARTIST        => 10;
+use constant DEF_NO_REPEAT_ALBUM         => 20;
+use constant DEF_MIN_DURATION            => 90;
+use constant DEF_MAX_DURATION            => 600;
+use constant DEF_NUM_DSTM_RESP_TRACKS    => 10;
+use constant DEF_NUM_SEED_TRACKS         => 1;
+use constant DEF_MAX_PREVIOUS_TRACKS     => 100;
+use constant DEF_API                     => API_HYPERBOLIC;
+
 my %XMAS_GENRES = map { $_ => 1 } ('Christmas', 'Xmas');
 
 
@@ -71,11 +82,11 @@ sub initPlugin {
         url              => 'http://localhost:8000',
         token            => undef,
         server_name      => '',
-        api              => 0,
-        min_duration     => 90,
-        max_duration     => 0,
-        no_repeat_artist => 15,
-        no_repeat_album  => 25,
+        api              => DEF_API,
+        min_duration     => DEF_MIN_DURATION,
+        max_duration     => DEF_MAX_DURATION,
+        no_repeat_artist => DEF_NO_REPEAT_ARTIST,
+        no_repeat_album  => DEF_NO_REPEAT_ALBUM,
         no_repeat_track  => DEF_MAX_PREVIOUS_TRACKS,
         use_track_genre  => 0,
         dstm_tracks      => DEF_NUM_DSTM_RESP_TRACKS,
@@ -354,8 +365,8 @@ sub _getSeedTracksFromQueue {
     my $pos = 0;
     my $count = int($prefs->get('num_seed_tracks') || DEF_NUM_SEED_TRACKS);
     my $strict = int($prefs->get('seed_strict_order') || 0);
-    my $minDuration = int($prefs->get('min_duration') || 0);
-    my $maxDuration = int($prefs->get('max_duration') || 0);
+    my $minDuration = int($prefs->get('min_duration') || DEF_MIN_DURATION);
+    my $maxDuration = int($prefs->get('max_duration') || DEF_MAX_DURATION);
     my $minCount = $count && $count>4 ? $count-2 : $count;
     my $collectLimit = $strict ? $count : ($count * 2);
 
@@ -462,10 +473,10 @@ sub _generateMix {
     main::DEBUGLOG && $log->debug("Generate mix");
 
     my $filterXmas = int($prefs->get('filter_xmas') || 0);
-    my $minDuration = int($prefs->get('min_duration') || 0);
-    my $maxDuration = int($prefs->get('max_duration') || 0);
-    my $noRepeatArtist = int($prefs->get('no_repeat_artist') || 15);
-    my $noRepeatAlbum = int($prefs->get('no_repeat_album') || 25);
+    my $minDuration = int($prefs->get('min_duration') || DEF_MIN_DURATION);
+    my $maxDuration = int($prefs->get('max_duration') || DEF_MAX_DURATION);
+    my $noRepeatArtist = int($prefs->get('no_repeat_artist') || DEF_NO_REPEAT_ARTIST);
+    my $noRepeatAlbum = int($prefs->get('no_repeat_album') || DEF_NO_REPEAT_ALBUM);
     my $matchAllGenres => int($prefs->get('match_all_genres') || 0);
     my $month = 0;
 
@@ -494,9 +505,9 @@ sub _generateMix {
             sub { $cb->([]); }
         );
     } else {
-        my $api => int($prefs->get('api') || 0);
+        my $api => int($prefs->get('api') || DEF_API);
 
-        if (1==$api) {
+        if (API_SEM_GROVE==$api) {
             main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI sem_grove API");
             Plugins::AudioMuseMixer::API::sem_grove(
                 @$seedTracks[0]->id, $reqCount,
@@ -522,7 +533,7 @@ sub _generateMix {
                     );
                 }
             );
-        } elsif (2==$api) {
+        } elsif (API_HYPERBOLIC==$api) {
             main::DEBUGLOG && $log->debug("Invoke AudioMuse-AI similar_hyperbolic_tracks API");
             Plugins::AudioMuseMixer::API::similar_hyperbolic_tracks(
                 @$seedTracks[0]->id, $reqCount,
