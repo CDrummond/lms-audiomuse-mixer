@@ -133,7 +133,7 @@ sub postinitPlugin {
                     }
                 },
                 int($prefs->get('dstm_tracks') || DEF_NUM_DSTM_RESP_TRACKS), $seeds, 1,
-                _getPreviousTracks($client, int($prefs->get('no_repeat_track') || DEF_MAX_PREVIOUS_TRACKS)));
+                _getPreviousTracks($client, int($prefs->get('no_repeat_track') || DEF_MAX_PREVIOUS_TRACKS)),);
             } else {
                 _mixFailed($client, $cb);
             }
@@ -381,7 +381,7 @@ sub _getSeedTracksFromQueue {
 
         next unless defined $artist && defined $title && 0==rindex($track->url, "file:", 0);
 
-        if ((0!=$minDuration && $duration<$minDuration) || (0!=$maxDuration && $duration>$maxDuration)) {
+        if (($minDuration>0 && $duration<$minDuration) || ($maxDuration>0 && $duration>$maxDuration)) {
             push @$durationFilteredTracks, $track;
             next;
         }
@@ -653,7 +653,7 @@ sub _processResponse {
         my @filteredOutDueToAlbum = ();
 
         foreach my $track (@$tracks) {
-            if (($minDuration>0 && $track->secs<$minDuration) || ($maxDuration>0 && $track->secs>$minDuration)) {
+            if (($minDuration>0 && $track->secs<$minDuration) || ($maxDuration>0 && $track->secs>$maxDuration)) {
                 main::DEBUGLOG && $log->debug("FILTER (duration): " . $track->url);
                 next;
             }
