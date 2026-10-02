@@ -359,6 +359,11 @@ sub _getSeedTracksFromQueue {
     my $minCount = $count && $count>4 ? $count-2 : $count;
     my $collectLimit = $strict ? $count : ($count * 2);
 
+    # If set for only 1 seed track, and not set to be last, then choose randomly from last 4
+    if (!$strict && $count==1) {
+        $collectLimit = 4;
+    }
+
     main::DEBUGLOG && $log->debug("Get seeds, minDuration:${minDuration}, maxDuration:${maxDuration}, minCount:${minCount}, count:${count}");
     # Get last tracks from queue (strict: exactly count, otherwise count*2)
     foreach my $track (reverse @{ Slim::Player::Playlist::playList($client) } ) {
