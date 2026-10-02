@@ -24,6 +24,22 @@ my $log = Slim::Utils::Log->addLogCategory({
 my $prefs = preferences('plugin.audiomusemixer');
 my $serverprefs = preferences('server');
 
+sub _trim {
+	my $s = shift;
+	return '' unless defined $s;
+	$s =~ s/\A\s+//;
+	$s =~ s/\s+\z//;
+	return $s;
+}
+
+sub _normalizeUrl {
+	my $u = _trim(shift // '');
+	return $u unless length $u;
+	$u = "http://$u" unless $u =~ m{^https?://}i;
+	$u =~ s{/+$}{};
+	return $u;
+}
+
 sub name {
     return Slim::Web::HTTP::CSRF->protectName('AudioMuseMixer');
 }
