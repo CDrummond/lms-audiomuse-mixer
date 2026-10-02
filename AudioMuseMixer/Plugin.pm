@@ -356,7 +356,6 @@ sub _cliMix {
         }
     }
 
-    # TODO: Pass album straight to audiomuse?
     main::DEBUGLOG && $log->debug("Num tracks for AudioMuseMix: " . scalar(@seedsToUse));
 
     if (scalar @seedsToUse > 0) {
