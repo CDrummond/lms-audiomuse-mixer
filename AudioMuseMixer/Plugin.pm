@@ -856,7 +856,7 @@ sub _initGenreGroups {
     main::DEBUGLOG && $log->debug("GENRE GROUPS: " . Data::Dump::dump($genreGroups));
 }
 
-sub _initExcludeAlbums {
+sub _initExcludeArtists {
     # Check to see if config has changed, saves having to read and process each time
     my $ts = $prefs->get('_ts_exclude_artists');
     if ($ts==$excludeArtistsTs ) {
@@ -874,9 +874,11 @@ sub _initExcludeAlbums {
                 $line=~ s/^\s+//;
                 $line=~ s/\s+$//;
                 if (length $line > 0) {
+                    main::DEBUGLOG && $log->debug("Exclude artist ${line}");
                     $sql->execute($line);
                     if ( my $result = $sql->fetchall_arrayref({}) ) {
                         foreach my $res (@$result) {
+                            main::DEBUGLOG && $log->debug(" -> " . $res->{'id'});
                             push @ids, $res->{'id'}
                         }
                     }
@@ -900,24 +902,34 @@ sub _initExcludeAlbums {
         my @lines = split(/\n/, $exPref);
         if (scalar(@lines)>0) {
             my $dbh = Slim::Schema->dbh;
-            my $artistSql = $dbh->prepare_cached( qq{SELECT id FROM albums WHERE contributor = ? AND name = ?} );
-            my $albumSql = $dbh->prepare_cached( qq{SELECT id FROM albums WHERE name = ?} );
+            my $artistSql = $dbh->prepare_cached( qq{SELECT id FROM contributors WHERE name = ?} );
+            my $artistAlbumSql = $dbh->prepare_cached( qq{SELECT id FROM albums WHERE contributor = ? AND title = ?} );
+            my $albumSql = $dbh->prepare_cached( qq{SELECT id FROM albums WHERE title = ?} );
             foreach my $line (@lines) {
                 $line=~ s/^\s+//;
                 $line=~ s/\s+$//;
                 if (length $line > 0) {
                     my @parts = split(/\/\//, $line);
                     if (2==scalar(@parts)) {
-                        $artistSql->execute($parts[0], $parts[1]);
-                        if ( my $result = $artistSql->fetchall_arrayref({}) ) {
-                            foreach my $res (@$result) {
-                                push @ids, $res->{'id'}
+                        main::DEBUGLOG && $log->debug("Exclude album " . $parts[1] . " by " . $parts[0]);
+                        $artistSql->execute($parts[0]);
+                        if ( my $artistRes = $artistSql->fetchall_arrayref({}) ) {
+                            foreach my $ares (@$artistRes) {
+                                $artistAlbumSql->execute($ares->{'id'}, $parts[1]);
+                                if ( my $albumRes = $artistAlbumSql->fetchall_arrayref({}) ) {
+                                    foreach my $res (@$albumRes) {
+                                        main::DEBUGLOG && $log->debug(" -> " . $res->{'id'});
+                                        push @ids, $res->{'id'}
+                                    }
+                                }
                             }
                         }
                     } else {
+                        main::DEBUGLOG && $log->debug("Exclude album ${line}");
                         $albumSql->execute($line);
                         if ( my $result = $albumSql->fetchall_arrayref({}) ) {
                             foreach my $res (@$result) {
+                                main::DEBUGLOG && $log->debug(" -> " . $res->{'id'});
                                 push @ids, $res->{'id'}
                             }
                         }
