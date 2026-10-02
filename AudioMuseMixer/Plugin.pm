@@ -111,6 +111,21 @@ sub initPlugin {
     #                                                            C  Q  T  F
     Slim::Control::Request::addDispatch(['audiomusemixer', '_cmd'], [0, 0, 1, \&_cliCommand]);
 
+    Slim::Menu::TrackInfo->registerInfoProvider( audiomusemix => (
+        above    => 'favorites',
+        func     => \&trackInfoHandler,
+    ) );
+
+    Slim::Menu::AlbumInfo->registerInfoProvider( audiomusemix => (
+        below    => 'addalbum',
+        func     => \&albumInfoHandler,
+    ) );
+
+    Slim::Menu::ArtistInfo->registerInfoProvider( audiomusemix => (
+        below    => 'addartist',
+        func     => \&artistInfoHandler,
+    ) );
+
     Slim::Player::ProtocolHandlers->registerHandler(
         audiomusemixer => 'Plugins::AudioMuseMixer::ProtocolHandler'
     );
@@ -118,6 +133,11 @@ sub initPlugin {
     if ( !main::SCANNER ) {
         Slim::Control::Request::addDispatch(['scanner', 'notify', '_msg'], [0, 0, 0, \&_notifyFromScanner]);
     }
+
+    Slim::Menu::TrackInfo->registerInfoProvider( audiomusemix => (
+        above    => 'favorites',
+        func     => \&trackInfoHandler,
+    ) );
 
     $initialized = 1;
     _initGenreGroups();
@@ -252,13 +272,13 @@ sub _cliResponse {
 
             my $thisWindow = {
                 'windowStyle' => 'icon_list',
-                'text'       => $request->string('BLISSMIXER_MIX'),
+                'text'       => $request->string('AUDIOMUSEMIXER_MIX'),
             };
             $request->addResult('window', $thisWindow);
 
             # add an item for "play this mix"
             $request->addResultLoop($loopname, $chunkCount, 'nextWindow', 'nowPlaying');
-            $request->addResultLoop($loopname, $chunkCount, 'text', $request->string('BLISSMIXER_PLAYTHISMIX'));
+            $request->addResultLoop($loopname, $chunkCount, 'text', $request->string('AUDIOMUSEMIXER_PLAYTHISMIX'));
             $request->addResultLoop($loopname, $chunkCount, 'icon-id', '/html/images/playall.png');
             my $actions = {
                 'go' => {
@@ -375,6 +395,64 @@ sub _cliMix {
         return;
     }
     $request->setStatusBadDispatch();
+}
+
+sub trackInfoHandler {
+    return _objectInfoHandler( 'track', @_ );
+}
+
+sub albumInfoHandler {
+    return _objectInfoHandler( 'album', @_ );
+}
+
+sub artistInfoHandler {
+    return _objectInfoHandler( 'artist', @_ );
+}
+
+sub _objectInfoHandler {
+    my ( $objectType, $client, $url, $obj, $remoteMeta, $tags ) = @_;
+    $tags ||= {};
+
+    my $special;
+    if ($objectType eq 'album') {
+        $special->{'actionParam'} = 'album_id';
+        $special->{'modeParam'}   = 'album';
+        $special->{'urlKey'}      = 'album';
+    } elsif ($objectType eq 'artist') {
+        $special->{'actionParam'} = 'artist_id';
+        $special->{'modeParam'}   = 'artist';
+        $special->{'urlKey'}      = 'artist';
+    } else {
+        $special->{'actionParam'} = 'track_id';
+        $special->{'modeParam'}   = 'track';
+        $special->{'urlKey'}      = 'song';
+    }
+
+    return {
+        type => 'redirect',
+        jive => {
+            actions => {
+                go => {
+                    player => 0,
+                    cmd    => [ 'audiomusemixer', 'mix' ],
+                    params => {
+                        menu     => 1,
+                        useContextMenu => 1,
+                        $special->{actionParam} => $obj->id,
+                    },
+                },
+            }
+        },
+        name      => cstring($client, 'AUDIOMUSEMIXER_CREATE_MIX'),
+        favorites => 0,
+
+        player => {
+            mode => 'audiomusemixer_mix',
+            modeParams => {
+                $special->{actionParam} => $obj->id,
+            },
+        }
+    };
 }
 
 sub _getSeedTracksFromQueue {
@@ -753,7 +831,7 @@ sub _processResponse {
             $albums{$album} = $pos;
 
             main::DEBUGLOG && $log->debug("USABLE: " . $track->url);
-            push @usable, $track->url;
+            push @usable, $track;
             $pos += 1;
         }
 
@@ -761,14 +839,14 @@ sub _processResponse {
         if ($total<=$count) {
             if ($total<$count) {
                 foreach my $track (@filteredOutDueToArtist) {
-                    push @usable, $track->url;
+                    push @usable, $track;
                     if (scalar(@usable)>=$count) {
                         last;
                     }
                 }
                 if (scalar(@usable)<$count) {
                     foreach my $track (@filteredOutDueToAlbum) {
-                        push @usable, $track->url;
+                        push @usable, $track;
                         if (scalar(@usable)>=$count) {
                             last;
                         }
@@ -793,13 +871,21 @@ sub _processResponse {
     } else {
         Slim::Player::Playlist::fischer_yates_shuffle($tracks);
         foreach my $track (@$tracks) {
-            push @usable, $track->url;
+            push @usable, $track;
         }
     }
     foreach my $track (@usable) {
         main::DEBUGLOG && $log->debug("Use track: ${track}");
     }
-    $cb->(\@usable);
+    if ($isDstm) {
+        my @urls = ();
+        foreach my $track (@$tracks) {
+            push @urls, $track->url;
+        }
+        $cb->(\@urls);
+    } else {
+        $cb->(\@usable);
+    }
 }
 
 sub _mixFailed {

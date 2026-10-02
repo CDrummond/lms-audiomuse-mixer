@@ -172,3 +172,25 @@ AUDIOMUSEMIXER_EXCLUDE_ARTISTS_DESC
 
 AUDIOMUSEMIXER_EXCLUDE_ALBUMS_DESC
 	EN	Each entry should be of the format "Artist//Album", and each should be on a separate line. If "//" is not found then only the album name is searched for.
+
+AUDIOMUSEMIXER_CREATE_MIX
+	EN	Create AudioMuse mix
+
+AUDIOMUSEMIXER_MIX
+	EN	AudioMuse
+
+AUDIOMUSEMIXER_PLAYTHISMIX
+	CS	Přehrát tento mix
+	DA	Afspil dette miks
+	DE	Diesen Mix wiedergeben
+	EN	Play this mix
+	ES	Reproducir esta mezcla
+	FI	Soita tämä miksi
+	FR	Lire ce mix
+	IT	Riproduci raccolta
+	NL	Deze mix afspelen
+	NO	Spill av denne miksen
+	PL	Odtwórz tę składankę
+	RU	Воспроизвести этот микс
+	SV	Spela upp den här mixen
+
