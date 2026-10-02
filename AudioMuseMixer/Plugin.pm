@@ -33,8 +33,10 @@ use constant API_SEM_GROVE               => 1;
 use constant API_HYPERBOLIC              => 2;
 use constant NUM_CLI_MIX_SEED_TRACKS     => 10;
 use constant MIN_CLI_MIX_SEED_TRACKS     => 7;
-use constant NUM_CLI_MIX_RESP_TRACKS_FEW => 20; # Number of tracks in a mix if few seeds
-use constant NUM_CLI_MIX_RESP_TRACKS     => 50; # Number of tracks in a mix
+use constant NUM_CLI_SEEDS_TO_ADD        => 4;
+use constant NUM_CLI_SEEDS_TO_ADD_FEW    => 2;
+use constant NUM_CLI_MIX_RESP_TRACKS_FEW => 15; # Number of tracks in a mix if few seeds
+use constant NUM_CLI_MIX_RESP_TRACKS     => 30; # Number of tracks in a mix
 
 # Defaults
 use constant DEF_NO_REPEAT_ARTIST        => 10;
@@ -173,7 +175,7 @@ sub _cliCommand {
 }
 
 sub _cliResponse {
-    my ($tracks, $request) = @_;
+    my ($tracks, $request, $seedTracks) = @_;
     my $count = scalar @$tracks;
     main::DEBUGLOG && $log->debug("CLI num tracks:" . $count);
     if ($count>0) {
@@ -189,11 +191,15 @@ sub _cliResponse {
             push @ids, $track->id;
         }
 
-        # TODO: Add more?
-        #if ($seedToAdd) {
-        #    push @usableTracks, $seedToAdd;
-        #    push @ids, $seedToAdd->id;
-        #}
+        Slim::Player::Playlist::fischer_yates_shuffle($seedTracks);
+        my $numSeedsToAdd = scalar(@$tracks)>NUM_CLI_MIX_RESP_TRACKS_FEW ? NUM_CLI_SEEDS_TO_ADD : NUM_CLI_SEEDS_TO_ADD_FEW;
+        if (scalar(@$seedTracks)>$numSeedsToAdd) {
+            @$seedTracks = splice(@$seedTracks, 0, $numSeedsToAdd);
+        }
+        foreach my $track (@$seedTracks) {
+            push @ids, $track->id;
+        }
+        Slim::Player::Playlist::fischer_yates_shuffle(\@ids);
 
         if ($menuMode) {
             my $idList = join( ",", @ids );
@@ -364,7 +370,7 @@ sub _cliMix {
             $respTracks = $origReqCount;
         }
 
-        _generateMix(sub { _cliResponse(shift, $request); }, $respTracks, \@seedsToUse, 0);
+        _generateMix(sub { _cliResponse(shift, $request, \@seedsToUse); }, $respTracks, \@seedsToUse, 0);
         $request->setStatusProcessing();
         return;
     }
@@ -440,7 +446,7 @@ sub _getSeedTracksFromQueue {
 
         if ($count && scalar @$tracks > $count) {
             Slim::Player::Playlist::fischer_yates_shuffle($tracks);
-            splice(@$tracks, $count);
+            @$tracks = splice(@$tracks, $count);
         }
 
         return $tracks;
