@@ -207,9 +207,6 @@ sub _cliResponse {
         my $useContextMenu = $request->getParam('useContextMenu');
         my @ids = ();
 
-        foreach my $track (@$tracks) {
-            push @ids, $track->id;
-        }
 
         Slim::Player::Playlist::fischer_yates_shuffle($seedTracks);
         my $numSeedsToAdd = scalar(@$tracks)>NUM_CLI_MIX_RESP_TRACKS_FEW ? NUM_CLI_SEEDS_TO_ADD : NUM_CLI_SEEDS_TO_ADD_FEW;
@@ -217,9 +214,16 @@ sub _cliResponse {
             @$seedTracks = splice(@$seedTracks, 0, $numSeedsToAdd);
         }
         foreach my $track (@$seedTracks) {
+            push @$tracks, $track;
+        }
+        Slim::Player::Playlist::fischer_yates_shuffle($tracks);
+        $count = scalar @$tracks;
+
+        foreach my $track (@$tracks) {
             push @ids, $track->id;
         }
-        Slim::Player::Playlist::fischer_yates_shuffle(\@ids);
+
+        main::DEBUGLOG && $log->debug("Mix IDs:" . join( ",", @ids ));
 
         if ($menuMode) {
             my $idList = join( ",", @ids );
@@ -355,7 +359,7 @@ sub _cliMix {
                 if ($track) {
                     if (($minDuration>0 && $track->secs<$minDuration) || ($maxDuration>0 && $track->secs>$maxDuration)) {
                         push @$durationFilteredTracks, $track;
-                    } ele {
+                    } else {
                         push @seedsToUse, $track;
                     }
                 }
@@ -874,16 +878,19 @@ sub _processResponse {
             push @usable, $track;
         }
     }
-    foreach my $track (@usable) {
-        main::DEBUGLOG && $log->debug("Use track: ${track}");
-    }
     if ($isDstm) {
         my @urls = ();
-        foreach my $track (@$tracks) {
+        foreach my $track (@usable) {
             push @urls, $track->url;
+        }
+        foreach my $url (@urls) {
+            main::DEBUGLOG && $log->debug("Use track - URL: ${url}");
         }
         $cb->(\@urls);
     } else {
+        foreach my $track (@usable) {
+            main::DEBUGLOG && $log->debug("Use track - ID: " . ${track}->id . " URL: " . ${track}->url);
+        }
         $cb->(\@usable);
     }
 }
