@@ -381,8 +381,10 @@ sub _cliMix {
             @seedsToUse = splice(@seedsToUse, 0, NUM_CLI_MIX_SEED_TRACKS);
         }
 
-        foreach my $track (@seedsToUse) {
-            main::DEBUGLOG && $log->debug("AudioMuseMix Track Seed " . $track->path);
+        if (main::DEBUGLOG) {
+            foreach my $track (@seedsToUse) {
+                $log->debug("AudioMuseMix Track Seed " . $track->path);
+            }
         }
     }
 
@@ -883,13 +885,17 @@ sub _processResponse {
         foreach my $track (@usable) {
             push @urls, $track->url;
         }
-        foreach my $url (@urls) {
-            main::DEBUGLOG && $log->debug("Use track - URL: ${url}");
+        if (main::DEBUGLOG) {
+            foreach my $url (@urls) {
+                $log->debug("Use track - URL: ${url}");
+            }
         }
         $cb->(\@urls);
     } else {
-        foreach my $track (@usable) {
-            main::DEBUGLOG && $log->debug("Use track - ID: " . ${track}->id . " URL: " . ${track}->url);
+        if (main::DEBUGLOG) {
+            foreach my $track (@usable) {
+                $log->debug("Use track - ID: " . ${track}->id . " URL: " . ${track}->url);
+            }
         }
         $cb->(\@usable);
     }
