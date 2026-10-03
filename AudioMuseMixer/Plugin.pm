@@ -207,16 +207,19 @@ sub _cliResponse {
         my $useContextMenu = $request->getParam('useContextMenu');
         my @ids = ();
 
-
         Slim::Player::Playlist::fischer_yates_shuffle($seedTracks);
-        my $numSeedsToAdd = scalar(@$tracks)>NUM_CLI_MIX_RESP_TRACKS_FEW ? NUM_CLI_SEEDS_TO_ADD : NUM_CLI_SEEDS_TO_ADD_FEW;
-        if (scalar(@$seedTracks)>$numSeedsToAdd) {
-            @$seedTracks = splice(@$seedTracks, 0, $numSeedsToAdd);
+        splice @$tracks, 0, 0, @$seedTracks[0];
+        my $numSeed = scalar(@$seedTracks);
+        if ($numSeed>3 && $count>=15) {
+            @$seedTracks[1];
+            my $pos = int($count/3);
+            splice @$tracks, ($pos) + 1, 0, @$seedTracks[1];
+            splice @$tracks, ($pos*2) + 1, 0, @$seedTracks[2];
+        } elsif ($numSeed>2 && $count>=5) {
+            @$seedTracks[1];
+            my $pos = int($count/2) + 2;
+            splice @$tracks, $pos, 0, @$seedTracks[1];
         }
-        foreach my $track (@$seedTracks) {
-            push @$tracks, $track;
-        }
-        Slim::Player::Playlist::fischer_yates_shuffle($tracks);
         $count = scalar @$tracks;
 
         foreach my $track (@$tracks) {
