@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <extension>
-	<id>7b05c9ff-c71c-432f-a486-80414ea9d4ec</id>
+	<id>a28d5397-e49c-4c2e-906d-aea0760193f5</id>
 	<icon>plugins/AudioMuseMixer/html/images/audiomusemixer.png</icon>
 	<name>AUDIOMUSEMIXER</name>
 	<module>Plugins::AudioMuseMixer::Plugin</module>
