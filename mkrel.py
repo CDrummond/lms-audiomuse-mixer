@@ -16,6 +16,7 @@ import shutil
 import sys
 
 
+PUBLIC_XML = "public.xml"
 REPO_XML = "repo.xml"
 PLUGIN_NAME = "AudioMuseMixer"
 PLUGIN_GIT_NAME = "lms-audiomuse-mixer"
@@ -157,6 +158,9 @@ updateInstallXml(version)
 
 zipFile = createZip(version)
 sha1 = getSha1Sum(zipFile)
-if version!="test" and os.path.exists(REPO_XML):
-    updateRepoXml(REPO_XML, version, zipFile, sha1, PLUGIN_NAME)
+if version!="test":
+    if os.path.exists(REPO_XML):
+        updateRepoXml(REPO_XML, version, zipFile, sha1, PLUGIN_NAME)
+    if os.path.exists(PUBLIC_XML):
+        updateRepoXml(PUBLIC_XML, version, zipFile, sha1, PLUGIN_NAME)
 
