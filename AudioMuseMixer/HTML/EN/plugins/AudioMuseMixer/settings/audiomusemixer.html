@@ -17,10 +17,6 @@
     <br/><hr style="opacity:0.4" class="sub-sep"/><br/>
     <b style="font-size:120%">[% "AUDIOMUSEMIXER_MIX_SETTINGS" | string %]</b><br/><br/>
 
-    [% WRAPPER settingGroup title="AUDIOMUSEMIXER_FILTER_GENRES" desc="AUDIOMUSEMIXER_FILTER_GENRES_DESC" %]
-        <input type="checkbox" name="pref_filter_genres" id="filter_genres" [% IF prefs.filter_genres %] checked [% END %] value="1"/>
-    [% END %]
-
     [% WRAPPER settingGroup title="AUDIOMUSEMIXER_NO_REPEAT_ARTIST" desc="AUDIOMUSEMIXER_NO_REPEAT_ARTIST_DESC" %]
         <input type="number" min="0" max="200" class="stdedit" name="pref_no_repeat_artist" id="no_repeat_artist" value="[% prefs.no_repeat_artist %]" size="5">
     [% END %]
