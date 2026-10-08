@@ -8,7 +8,7 @@
       <title lang="EN">Material Skin</title>
       <desc lang="EN">DSTM mixer using AudioMuse similarity.</desc>
       <url>https://github.com/CDrummond/lms-audiomuse-mixer/releases/download/0.0.1/lms-audiomuse-mixer-0.0.1.zip</url>
-      <sha>446bea09a548801b0ad326b0cfa6d1e70f34e9f7</sha>
+      <sha>ebe11fac19ef721ef10bedaa17c355bcc74295e3</sha>
       <creator>Craig Drummond</creator>
     </plugin>
   </plugins>
