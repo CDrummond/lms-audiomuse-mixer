@@ -5,7 +5,7 @@
   </details>
   <plugins>
     <plugin name="AudioMuseMixer" version="0.0.1" minTarget="9.0.0" maxTarget="*">
-      <title lang="EN">Material Skin</title>
+      <title lang="EN">AudioMuse Mixer</title>
       <desc lang="EN">DSTM mixer using AudioMuse similarity.</desc>
       <url>https://github.com/CDrummond/lms-audiomuse-mixer/releases/download/0.0.1/lms-audiomuse-mixer-0.0.1.zip</url>
       <sha>ebe11fac19ef721ef10bedaa17c355bcc74295e3</sha>
